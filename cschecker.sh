@@ -1,5 +1,6 @@
 #!/bin/sh
 
+
 pError() {
     if [ "$#" -ne 1 ]; then 
         echo "Invalid arguments: need one string."
@@ -29,7 +30,7 @@ analyse() {
         pError "Invalid arguments: usage: ./cschecker.sh <source> <allowed functions>"
         exit 0
     fi
-    
+        
     if [ -z "$( echo "$1" |grep '[a-zA-Z0-9_]*[.]c$' )" ] && \
        [ -z "$( echo "$1" |grep '[a-zA-Z0-9_]*[.]h$' )" ]; then
         pError "Invalid file type. Given file ($1) is not C code."
@@ -52,10 +53,21 @@ analyse() {
     functions="$( cat $1 |grep -E '[a-z][a-zA-Z0-9_ ]+\([a-zA-Z0-9_*\(\), ]*$' )"
     number_of_functions=$(echo "$functions" | wc -l)
 
+    spaceparenthesis=$( echo "$functions" |grep -E '[^ ]+[[:space:]]+\(')
+    number_of_sp=$( echo "$spaceparenthesis" |wc -l)
+    if [ "$number_of_sp" -ne 0 ]; then
+        pError "| - CS 7.19 exp.args: There MUST NOT be any whitespace between the function or method name and the opening"
+        pError "|                     parenthesis for arguments, either in declarations or calls."
+        pError "|    $1: $spaceparenthesis"
+        errors=$((errors+1))
+    else
+        pSuccess "| - CS 7.19 exp.args: No function with whitespace between the function name and the opening parenthesis."
+    fi
+
     noarg=$( echo "$functions" |grep -E '[^\(]+\([[:blank:]]*\)')
     number_of_noargs=$( echo "$noarg" |wc -l)
     if [ "$number_of_noargs" -ne 0 ]; then
-        pError "| - CS 8.5 fun.proto.void: Prototypes MUST specify void if your function does not take any argument"
+        pError "| - CS 8.5 fun.proto.void: Prototypes MUST specify void if your function does not take any argument."
         pError "|   $1: $noarg"
         errors=$((errors+1))
     else
