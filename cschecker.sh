@@ -62,7 +62,7 @@ analyse() {
         pSuccess "| - CS 7.18 exp.parentheses: No extra whitespaces between parenthesis"
     fi
 
-    spaceparenthesis=$( echo "$functions" |grep -E '[^ ]+[[:space:]]+\(')
+    spaceparenthesis=$( echo "$functions" |grep '[^ ]+[[:space:]]+(')
     number_of_sp=$( echo "$spaceparenthesis" |wc -l)
     if [ "$number_of_sp" -ne 0 ]; then
         pError "| - CS 7.19 exp.args: There MUST NOT be any whitespace between the function or method name and the opening"
@@ -73,7 +73,7 @@ analyse() {
         pSuccess "| - CS 7.19 exp.args: No function with whitespace between the function name and the opening parenthesis."
     fi
 
-    noarg=$( echo "$functions" |grep -E '[^\(]+\([[:blank:]]*\)')
+    noarg=$( echo "$functions" |grep '[^(]+([[:blank:]]*)')
     number_of_noargs=$( echo "$noarg" |wc -l)
     if [ "$number_of_noargs" -ne 0 ]; then
         pError "| - CS 8.5 fun.proto.void: Prototypes MUST specify void if your function does not take any argument."
