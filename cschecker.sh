@@ -108,7 +108,7 @@ analyse() {
         if [ "$number_of_functions" -gt 10 ]; then
             pError "| - CS 8.9 file.fun.count: There MUST NOT appear more than 10 functions (exported + local) per source file."
             pError "|   Currently you have $number_of_functions functions."
-            ((errors++))
+            errors=$((errors+1))
         else
             if [ "$number_of_functions" -eq 1 ]; then
                 pSuccess "| - CS 8.9 file.fun.count: 1 function (which is less than 10)."
@@ -157,8 +157,11 @@ pInfo "Allowed functions are: $allowed_funcs"
 
 if [ "$#" -eq 1 ] && [ -d "$1" ]; then
     pInfo "Analysing C files located in $1"
+    pInfo "Results will be written in the result.txt file."
+    rm result.txt
+    touch result.txt
     find "$1" -name '*.c' -or -name '*.h' | while read file; do
-        analyse "$file" "$allowed_funcs"
+        analyse "$file" "$allowed_funcs" >> "result.txt"
     done
 else
     for arg in "$@"; do
