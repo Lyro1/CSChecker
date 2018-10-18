@@ -1,6 +1,5 @@
 #!/bin/sh
 
-
 pError() {
     if [ "$#" -ne 1 ]; then 
         echo "Invalid arguments: need one string."
@@ -52,6 +51,16 @@ analyse() {
 
     functions="$( cat $1 |grep -E '[a-z][a-zA-Z0-9_ ]+\([a-zA-Z0-9_*\(\), ]*$' )"
     number_of_functions=$(echo "$functions" | wc -l)
+
+    spaceinpar=$( grep '([[:blank:]]\|[[:blank:]])' "$1" )
+    number_of_sip=$( echo "$spaceinpar" |wc -l )
+    if [ "$number_of_sip" -ne 0 ]; then
+        pError "| - CS 7.18 exp.parentheses: There MUST NOT be any whitespace following an opening parenthesis nor any"
+        pError "|                            whitespace preceding a closing parenthesis."
+        errors=$((errors+1))
+    else
+        pSuccess "| - CS 7.18 exp.parentheses: No extra whitespaces between parenthesis"
+    fi
 
     spaceparenthesis=$( echo "$functions" |grep -E '[^ ]+[[:space:]]+\(')
     number_of_sp=$( echo "$spaceparenthesis" |wc -l)
@@ -131,7 +140,6 @@ analyse() {
     else
         pSuccess "| Analyse done: no error has been detected."
     fi
-    exit "$errors"
 }
 
 if [ "$#" -eq 0 ]; then
@@ -149,8 +157,8 @@ pInfo "Allowed functions are: $allowed_funcs"
 
 if [ "$#" -eq 1 ] && [ -d "$1" ]; then
     pInfo "Analysing C files located in $1"
-    for file in $(ls $1 -R); do
-        analyse "$1/$file" "$allowed_funcs"
+    find "$1" -name '*.c' -or -name '*.h' | while read file; do
+        analyse "$file" "$allowed_funcs"
     done
 else
     for arg in "$@"; do
