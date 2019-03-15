@@ -53,8 +53,9 @@ analyse() {
     number_of_functions=$(echo "$functions" | wc -l)
 
     spaceinpar=$( grep '([[:blank:]]\|[[:blank:]])' "$1" )
-    number_of_sip=$( echo "$spaceinpar" |wc -l )
-    if [ "$number_of_sip" -ne 0 ]; then
+    number_of_sip=$( echo "$spaceinpar" | wc -l )
+    echo "$number_of_sip"
+    if [ "$number_of_sip" -ne 0 ]; then
         pError "| - CS 7.18 exp.parentheses: There MUST NOT be any whitespace following an opening parenthesis nor any"
         pError "|                            whitespace preceding a closing parenthesis."
         errors=$((errors+1))
